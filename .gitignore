@@ -1,0 +1,38 @@
+# Ignore Visual Studio files
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.user
+*.ipch
+*.db
+
+# Ignore build artifacts
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore generated binaries
+*.exe
+*.dll
+*.obj
+*.o
+*.pdb
+*.lib
+*.a
+*.out
+*.class
+*.so
+
+# Ignore logs, databases, and temporary files
+*.log
+*.sqlite
+*.tmp
+
+# Ignore other system files
+.DS_Store
+Thumbs.db
+*.bak
+*.swp
