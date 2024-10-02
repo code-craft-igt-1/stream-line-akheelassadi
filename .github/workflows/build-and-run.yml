@@ -1,0 +1,64 @@
+name: Build and Run
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # Install coverage tool
+    - name: Install coverage tool
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcovr
+
+    # Setup cmake
+    - name: Setup CMake
+      run: sudo apt install -y cmake
+
+    # Setup and run linter for C++ files
+    - name: Setup and run linter
+      run: |
+        pip install cpplint
+        cpplint --filter=-legal,-build/c++11 --linelength=100 *.cpp *.h
+
+    # Build C++ project
+    - name: Build
+      run: |
+        cmake -S . -B build
+        cmake --build build
+      
+    # Run C++ executable and pipe output to Python script
+    - name: Run C++ executable and pipe output
+      run: |
+        ./build/SenderExecutable | python3 processor/processor_sensor_data.py
+
+    # Install Python and dependencies
+    - name: Install Python
+      run: |
+        sudo apt-get install -y python3 python3-pip
+
+    # Install coverage package for Python tests
+    - name: Install coverage for Python
+      run: pip3 install coverage
+
+    # Run Python tests
+    - name: Run Python tests
+      run: |
+        python3 -m unittest discover -s processor -p "test_processor.py"
+
+    
+    # Collect coverage for C++
+    - name: Collect C++ coverage
+      run: gcovr --gcov-exclude=".*test.*" -r . --html --html-details -o coverage_cpp.html --print-summary
+
+    # Create coverage artifacts
+    - name: Create coverage artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage
+        path: coverage_*.html
+        retention-days: 21
